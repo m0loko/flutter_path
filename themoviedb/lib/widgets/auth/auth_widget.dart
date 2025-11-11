@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:themoviedb/Theme/button_style.dart';
+import 'package:themoviedb/library/Widgets/Inherited/provider.dart';
+import 'package:themoviedb/widgets/auth/auth_model.dart';
 import 'package:themoviedb/widgets/main_screen/main_screen_widget.dart';
 
 //main
@@ -73,90 +75,104 @@ class _HeaderWidget extends StatelessWidget {
   }
 }
 
-//forms
-class _FormWidget extends StatefulWidget {
-  const _FormWidget({super.key});
-
-  @override
-  State<_FormWidget> createState() => __FormWidgetState();
-}
-
-class __FormWidgetState extends State<_FormWidget> {
+class _FormWidget extends StatelessWidget {
+  _FormWidget({super.key});
+  /////////////////////////////////////////////////////////////////////////
+  //цвета и тд (рефакт)
   final textStyle = const TextStyle(fontSize: 16, color: Color(0xFF212529));
   final textFielDecoration = InputDecoration(
     border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
     contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
     isCollapsed: true,
   );
-
   final color = const Color(0xFF01B4E4);
-
-  final buttonStyleFirst = TextButton.styleFrom(
+  static final buttonStyleFirst = TextButton.styleFrom(
     backgroundColor: Color(0xFF01B4E4),
     foregroundColor: Colors.white,
     textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
     padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
   );
-  //потом это убрать, это для экономии времени
-  final _loginController = TextEditingController(text: 'a');
-  final _passsworController = TextEditingController(text: 'a');
-  String? errorText = null;
-
-  void _auth() {
-    final login = _loginController.text;
-    final password = _passsworController.text;
-
-    if (login == 'a' && password == 'a') {
-      errorText = null;
-
-      Navigator.of(context).pushReplacementNamed('/main_screen');
-      //Navigator.of(context).pushNamed('/main_screen');
-    } else {
-      errorText = 'Не верный логин или пароль';
-      print('show error');
-    }
-    setState(() {});
-  }
-
-  void _resetPassword() {
-    print('reset Password');
-  }
-
+  /////////////////////////////////////////////////////////////////////////
+  ///
   @override
   Widget build(BuildContext context) {
-    final errorText = this.errorText;
+    final model = NotifierProvider.read<AuthModel>(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (errorText != null) ...[
-          Text(errorText, style: TextStyle(color: Colors.red, fontSize: 17)),
-          SizedBox(height: 25),
-        ],
-
+        _ErrorMessageWidget(),
         Text('Username', style: textStyle),
-        TextField(decoration: textFielDecoration, controller: _loginController),
+        TextField(
+          decoration: textFielDecoration,
+          controller: model?.loginController,
+        ),
         Text('Password', style: textStyle),
         TextField(
           decoration: textFielDecoration,
           obscureText: true,
-          controller: _passsworController,
+          controller: model?.passsworController,
         ),
         Row(
           children: [
-            TextButton(
-              style: buttonStyleFirst,
-              onPressed: _auth,
-              child: Text('Login'),
-            ),
+            const _AuthBottonWidget(),
             SizedBox(width: 30),
             TextButton(
-              onPressed: _resetPassword,
-              child: Text('Reset password'),
+              onPressed: () {},
+              child: const Text('Reset password'),
               style: AppButtonStyle.linkButton,
             ),
           ],
         ),
       ],
+    );
+  }
+}
+
+class _AuthBottonWidget extends StatelessWidget {
+  const _AuthBottonWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final model = NotifierProvider.watch<AuthModel>(context);
+    final onPressed = model?.canStartAuth == true
+        ? () => model?.auth(context)
+        : null;
+    final child = model?.isAuthProgress == true
+        ? const SizedBox(
+            child: CircularProgressIndicator(strokeWidth: 2),
+            width: 15,
+            height: 15,
+          )
+        : const Text('Login');
+    return ElevatedButton(
+      style: TextButton.styleFrom(
+        backgroundColor: Color(0xFF01B4E4),
+        foregroundColor: Colors.white,
+        textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+      ),
+      onPressed: onPressed,
+      child: child,
+    );
+  }
+}
+
+class _ErrorMessageWidget extends StatelessWidget {
+  const _ErrorMessageWidget({super.key});
+  @override
+  Widget build(BuildContext context) {
+    final errorMessage = NotifierProvider.watch<AuthModel>(
+      context,
+    )?.errorMessage;
+    if (errorMessage == null) {
+      return SizedBox.shrink();
+    }
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Text(
+        errorMessage,
+        style: TextStyle(color: Colors.red, fontSize: 17),
+      ),
     );
   }
 }
