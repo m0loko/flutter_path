@@ -5,16 +5,15 @@ import 'package:flutter/material.dart';
 class ExampleWidgetModel extends ChangeNotifier {
   final apiClient = ApiClient();
   var _posts = <Post>[];
-
   List<Post> get posts => _posts;
-  Future<void> reloadPosts() async {
+  void createPost() async {
+    final post = await apiClient.createPost(title: 'vfvf', body: 'hello');
+  }
+
+  void reloadPosts() async {
     final posts = await apiClient.getPosts();
     _posts += posts;
     notifyListeners();
-  }
-
-  Future<void> createPost() async {
-    final posts = await apiClient.createPost(title: 'nvjfnv', body: 'стол');
   }
 }
 
@@ -22,8 +21,8 @@ class ExampleModelProvider extends InheritedNotifier {
   final ExampleWidgetModel model;
   const ExampleModelProvider({
     super.key,
-    required this.child,
     required this.model,
+    required this.child,
   }) : super(child: child, notifier: model);
 
   final Widget child;
@@ -38,4 +37,11 @@ class ExampleModelProvider extends InheritedNotifier {
         ?.widget;
     return widget is ExampleModelProvider ? widget : null;
   }
+
+  @override
+  bool updateShouldNotify(ExampleModelProvider oldWidget) {
+    return true;
+  }
+
+ 
 }

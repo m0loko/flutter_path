@@ -10,11 +10,12 @@ class Post {
   final String title;
   final String body;
 
-  Post(
-      {required this.userID,
-      required this.id,
-      required this.title,
-      required this.body});
-  factory Post.fromjson(Map<String, dynamic> json) => _$PostFromJson(json);
+  Post({
+    required this.userID,
+    required this.id,
+    required this.title,
+    required this.body,
+  });
+  factory Post.fromJsom(Map<String, dynamic> json) => _$PostFromJson(json);
   Map<String, dynamic> toJson() => _$PostToJson(this);
 }

@@ -1,46 +1,21 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:api_client/domain/entity/post.dart';
+import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 
 class ApiClient {
   final client = HttpClient();
-  Future<List<Post>> getPosts() async {
-    /*   final url = Uri.parse('https://jsonplaceholder.typicode.com/posts');
-    final request = await client.getUrl(url);
-    final response = await request.close(); //отправляем в сеть
 
-    final jsonStrings = await response
-        .transform(utf8.decoder)
-        .toList(); //ждём ну и потом преобразуем
-    final jsonString = jsonStrings.join(); */
-    final json =
-        await get('https://jsonplaceholder.typicode.com/posts')
-            as List<dynamic>;
+  Future<List<Post>> getPosts() async {
+    final json = await get('https://jsonplaceholder.typicode.com/posts');
     final posts = json
-        .map((e) => Post.fromjson(e as Map<String, dynamic>))
+        .map((e) => Post.fromJsom(e as Map<String, dynamic>))
         .toList();
     return posts;
   }
 
-  Future<dynamic> get(String ulr) async {
-    final url = Uri.parse(ulr);
-    final request = await client.getUrl(url);
-    final response = await request.close(); //отправляем в сеть
-
-    final jsonStrings = await response
-        .transform(utf8.decoder)
-        .toList(); //ждём ну и потом преобразуем
-    final jsonString = jsonStrings.join();
-    final dynamic json = jsonDecode(jsonString);
-
-    return json;
-  }
-
-  Future<Post>? createPost({
-    required String title,
-    required String body,
-  }) async {
+  Future<Post> createPost({required String title, required String body}) async {
     final url = Uri.parse('https://jsonplaceholder.typicode.com/posts');
     final parameters = <String, dynamic>{
       'title': title,
@@ -54,6 +29,33 @@ class ApiClient {
     final jsonStrings = await response.transform(utf8.decoder).toList();
     final jsonString = jsonStrings.join();
     final json = jsonDecode(jsonString) as Map<String, dynamic>;
-    return Post.fromjson(json);
+    final post = Post.fromJsom(json);
+    return post;
+  }
+
+  Future<List<dynamic>> get(String ulr) async {
+    final url = Uri.parse(ulr);
+    final request = await client.getUrl(url);
+    final response = await request.close();
+    final jsonStrings = await response.transform(utf8.decoder).toList();
+    final jsonString = jsonStrings.join();
+    final json = jsonDecode(jsonString) as List<dynamic>;
+    return json;
+  }
+
+  Future<void> fileUpload(File file) async {
+    final url = Uri.parse('https://xz');
+    final request = await client.postUrl(url);
+    request.headers.set(HttpHeaders.contentTypeHeader, ContentType.binary);
+    request.headers.add('filename', basename(file.path));
+    request.contentLength = file.lengthSync();
+    final fileStream = file.openRead();
+    await request.addStream(fileStream);
+    final httpResponse = await request.close();
+    if (httpResponse.statusCode == 200) {
+      print('ok');
+    } else {
+      return;
+    }
   }
 }
