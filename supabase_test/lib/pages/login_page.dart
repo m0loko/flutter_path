@@ -34,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Login')),
-      
+
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 50),
         children: [
@@ -42,6 +42,7 @@ class _LoginPageState extends State<LoginPage> {
             controller: _emailController,
             decoration: const InputDecoration(labelText: 'Email'),
           ),
+
           TextField(
             controller: _passwordController,
             decoration: const InputDecoration(labelText: 'Password'),
