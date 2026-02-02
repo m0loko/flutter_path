@@ -109,10 +109,11 @@ class User extends BaseEntity {
 
 /*
   3. POLYMORPHISM (Полиморфизм)
+  На греческом языке πολύμορφος (полиморфус) означает «многообразие»
   -----------------------------------------------------------------------------
   ОПРЕДЕЛЕНИЕ:
-  Способность объектов с одинаковой спецификацией (интерфейсом) иметь
-  различную реализацию. "Один интерфейс — много форм".
+  Способность объектов с одинаковым интерфейсом иметь
+  различную реализацию. "Один интерфейс — много форм"
 
   ВИДЫ В DART:
   1. Переопределение методов (`@override`) - Runtime polymorphism.
@@ -161,7 +162,7 @@ class ScreenViewEvent implements AnalyticsEvent {
 class AnalyticsService {
   void logEvent(AnalyticsEvent event) {
     print('Sending event: ${event.name} with params: ${event.parameters}');
-  }
+  } 
 }
 
 void testPolymorphism() {
@@ -177,8 +178,9 @@ void testPolymorphism() {
   4. ABSTRACTION (Абстракция)
   -----------------------------------------------------------------------------
   ОПРЕДЕЛЕНИЕ:
-  Выделение значимых характеристик объекта и игнорирование деталей реализации.
-  Мы взаимодействуем с "идеей" объекта, а не с его "кишками".
+  Суть абстракции в том, что мы не взаимодействуем с конкретной реализацией, а только с абстрактным представлением.
+   BuildContext во Flutter - отличный пример этого. Мы используем его для доступа к ресурсам и сервисам,
+    не зная и не заботясь о том, как именно он устроен внутри. Мы работаем с абстракцией контекста, а не с его "кишками".
 
   ОСОБЕННОСТИ DART 3:
   - `abstract class`: Нельзя создать экземпляр, можно иметь методы с телом.
@@ -230,13 +232,6 @@ class ProductViewModel {
   }
 }
 
-
-
-
-
-
-
-
 ///2
 // =============================================================================
 // INHERITANCE TYPES & COMPOSITION IN DART/FLUTTER
@@ -274,16 +269,19 @@ class Animal {
   void eat() => print('Animal eating');
 }
 
-class Mammal extends Animal { // Single
+class Mammal extends Animal {
+  // Single
   void breathe() => print('Breathing air');
 }
 
-class Dog extends Mammal { // Multi-level (Dog -> Mammal -> Animal)
+class Dog extends Mammal {
+  // Multi-level (Dog -> Mammal -> Animal)
   void bark() => print('Woof');
 }
 
 // --- 2. Hierarchical ---
-class Cat extends Mammal { // Cat и Dog оба наследуются от Mammal
+class Cat extends Mammal {
+  // Cat и Dog оба наследуются от Mammal
   void meow() => print('Meow');
 }
 
@@ -336,7 +334,7 @@ class BaseList {
   void addAll(List<String> newItems) {
     // В первой версии метода здесь был цикл: for (var i in newItems) add(i);
     // Во второй версии мы решили оптимизировать:
-    items.addAll(newItems); 
+    items.addAll(newItems);
   }
 }
 
@@ -361,7 +359,7 @@ void testProblem() {
   // Если BaseList.addAll использует внутри себя add(),
   // то CounterList.count увеличится ДВАЖДЫ (один раз в addAll, второй раз в add).
   // Это классическая ошибка наследования реализации.
-  list.addAll(['A', 'B', 'C']); 
+  list.addAll(['A', 'B', 'C']);
 }
 
 // =============================================================================
@@ -394,7 +392,6 @@ void testProblem() {
 // --- GOOD EXAMPLE (Composition / Decorator во Flutter) ---
 // Мы создаем виджет, который СОДЕРЖИТ (Has-a) кнопку.
 
-
 class RedButtonWrapper extends StatelessWidget {
   final VoidCallback onPressed;
   final Widget child;
@@ -407,10 +404,7 @@ class RedButtonWrapper extends StatelessWidget {
     // Мы контролируем только то, что хотим изменить.
     return Container(
       color: Colors.red,
-      child: ElevatedButton(
-        onPressed: onPressed,
-        child: child,
-      ),
+      child: ElevatedButton(onPressed: onPressed, child: child),
     );
   }
 }
@@ -477,7 +471,7 @@ class Robot implements IWorker {
   void eat() {
     // СИГНАЛ БЕДЫ: Роботы не едят.
     // Нам приходится либо оставлять пустым, либо кидать ошибку.
-    throw UnimplementedError('Robots do not eat'); 
+    throw UnimplementedError('Robots do not eat');
   }
 }
 
